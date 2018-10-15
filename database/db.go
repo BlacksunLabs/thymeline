@@ -1,7 +1,9 @@
 // Package db handles database interaction for thymeline
 package db
 
-import "github.com/globalsign/mgo"
+import (
+	"github.com/globalsign/mgo"
+)
 
 // Session wraps an pointer to an mgo.Session and adds convenience methods 
 type Session struct {
