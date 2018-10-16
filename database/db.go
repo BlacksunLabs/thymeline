@@ -11,15 +11,15 @@ type Session struct {
 }
 
 const (
-	host = "mongodb:27017"
+	host = "localhost:27017"
 	dirDB = "Directory_DB"
 	dirCollection = "OpDirs"
 	eventDB = "Event_Cache"
 	scrotCollection = "Screenshots"
 )
 
-// NewSession returns a pointer to a new Session object given a pointer to an mgo.Session
-func NewSession (s *mgo.Session) *Session {
+// newSession returns a pointer to a new Session object given a pointer to an mgo.Session
+func newSession (s *mgo.Session) *Session {
 	return &Session{s}
 }
 
@@ -27,13 +27,14 @@ func NewSession (s *mgo.Session) *Session {
 //
 // Returns
 // *Session - pointer to a Session
-func Connect() *Session {
+// error if any
+func Connect() (*Session, error) {
 	s, err := mgo.Dial(host)
 	if err != nil {
-		panic(err)
+		return &Session{}, err
 	}
 
-	return NewSession(s)
+	return newSession(s), nil
 }
 
 // GetCollection gets a collection from a database given a valid session and returns a pointer to the collection
