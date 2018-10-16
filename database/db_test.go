@@ -11,6 +11,8 @@ func TestConnect(t *testing.T) {
 
 func TestAddToDB(t *testing.T) {
 	s, err := Connect()
+	defer s.Close()
+
 	if err != nil {
 		t.Errorf("Unable to connect to MongoDB: %v", err)
 	}
@@ -20,4 +22,18 @@ func TestAddToDB(t *testing.T) {
 	testDir["testdir"] = "/Path/to/non-existent/directory"
 	opdir.Operation = testDir
 	opdir.AddToDB(*s)
+}
+
+func TestRemoveOpDir(t *testing.T) {
+	s, err := Connect()
+	defer s.Close()
+
+	if err != nil {
+		t.Errorf("Unable to connect to MongoDB: %v", err)
+	}
+
+	err = RemoveOpDir(*s, "testdir")
+	if err != nil {
+		t.Errorf("Failed to remove OpDir: %v", err)
+	}
 }
