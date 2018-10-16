@@ -6,11 +6,6 @@ services:
       - 27017:27017
     volumes:
       - "mongodata:/data/db"
-    networks:
-      - thymeline
 
 volumes:
   mongodata:
-
-networks:
-  thymeline:
