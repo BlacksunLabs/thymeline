@@ -1,7 +1,43 @@
 package screenshot
 
-// WatchDir watches a directory for new screenshots
-func WatchDir(path string) error {
+import (
+	"time"
+	"fmt"
+	"github.com/radovskyb/watcher"
+)
+
+var w = watcher.New()
+
+// WatchDirs watches directories for new screenshots
+func WatchDirs() {
+	w.SetMaxEvents(1)
+	w.FilterOps(watcher.Create)
+
+	go func() {
+		for {
+			select {
+			case event := <- w.Event:
+				fmt.Println(event)
+			case err := <-w.Error:
+				fmt.Println(err)
+			case <-w.Closed:
+				return
+			}
+		}
+	}()
+
+	err := w.Start(time.Millisecond * 100)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+// AddDir adds a directory to be watched via its path
+func AddDir(path string) error {
+	err := w.Add(path)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
