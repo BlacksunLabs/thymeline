@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n0ncetonic/thymeline/ui"
+	"github.com/BlacksunLabs/thymeline/ui"
 )
 
 // Screenshot describes a screenshot event
