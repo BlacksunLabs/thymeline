@@ -45,3 +45,21 @@ func TestRemoveOpDir(t *testing.T) {
 		t.Errorf("Failed to remove OpDir: %v", err)
 	}
 }
+
+func TestGetOpDirs(t *testing.T) {
+	s, err := Connect()
+	defer s.Close()
+	
+	if err != nil {
+		t.Errorf("Unable to connect to MongoDB: %v", err)
+	}
+
+	var dirs []string
+
+	dirs, err = GetOpDirs(*s)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	t.Log(dirs)
+}
