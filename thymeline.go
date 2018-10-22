@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
+func startRouter() {
 	router := gin.Default()
 
 	logGroup := router.Group("/log")
