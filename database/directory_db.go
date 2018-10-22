@@ -8,8 +8,9 @@ import (
 
 // OpDir hold a map that links directory paths to operation names
 type OpDir struct {
-	ID        bson.ObjectId     `json:"id" bson:"_id,omitempty"`
-	Operation map[string]string `json:"operation" bson:"operation"`
+	ID bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	// Operation map[string]string `json:"operation" bson:"operation"`
+	Operation Op
 }
 
 // Op is a map of operation names and their local path
@@ -46,19 +47,19 @@ func RemoveOpDir(s Session, opname string) error {
 		return err
 	}
 
-	for _, doc := range data {
-		for key, value := range doc {
-			if key == "operation" {
-				for key, _ := range value.(bson.M) {
-					if key == opname {
-						id := doc["_id"].(bson.ObjectId)
-						collection.RemoveId(id)
-					}
-				}
-				return nil
-			}
-		}
-	}
+	// for _, doc := range data {
+	// 	for key, value := range doc {
+	// 		if key == "operation" {
+	// 			for key, _ := range value.(bson.M) {
+	// 				if key == opname {
+	// 					id := doc["_id"].(bson.ObjectId)
+	// 					collection.RemoveId(id)
+	// 				}
+	// 			}
+	// 			return nil
+	// 		}
+	// 	}
+	// }
 	return fmt.Errorf("no operation named %s found", opname)
 }
 
@@ -68,27 +69,22 @@ func RemoveOpDir(s Session, opname string) error {
 // A slice of strings containing paths to operation screenshot directories
 func GetOpDirs(s Session) ([]string, error) {
 	var (
-		session    = s.Copy()
-		opdirs     []string
-		data       []bson.M
+		session = s.Copy()
+		opdirs  []string
+		// data       []bson.M
 		collection = s.GetCollection(dirDB, dirCollection)
 	)
 	defer session.Close()
 
-	err := collection.Find(bson.M{}).All(&data)
+	// err := collection.Find(bson.M{}).All(&data)
+	ops := []OpDir{}
+	err := collection.Find(bson.M{}).Select(bson.M{"operation.path": 1}).All(&ops)
 	if err != nil {
 		return nil, err
 	}
-
-	for _, doc := range data {
-		for key, value := range doc {
-			if key == "operation" {
-				for _, value := range value.(bson.M) {
-					fmt.Printf("%v", value.(string))
-					opdirs = append(opdirs, value.(string))
-				}
-			}
-		}
+	fmt.Printf("%v", ops)
+	for _, op := range ops {
+		opdirs = append(opdirs, op.Operation.Path)
 	}
 
 	return opdirs, nil
