@@ -4,6 +4,7 @@ import (
 	"go/build"
 	"testing"
 )
+
 func TestConnect(t *testing.T) {
 	_, err := Connect()
 	if err != nil {
@@ -22,10 +23,9 @@ func TestAddToDB(t *testing.T) {
 	}
 
 	opdir := &OpDir{}
-	testDir := make(map[string]string)
-	testDir["testdir"] = projectPath + "/database/testdir"
-	opdir.Operation = testDir
-	
+	opdir.Operation.Name = "testdir"
+	opdir.Operation.Path = projectPath + "/database/testdir"
+
 	err = opdir.AddToDB(*s)
 	if err != nil {
 		t.Error(err)
@@ -49,7 +49,7 @@ func TestRemoveOpDir(t *testing.T) {
 func TestGetOpDirs(t *testing.T) {
 	s, err := Connect()
 	defer s.Close()
-	
+
 	if err != nil {
 		t.Errorf("Unable to connect to MongoDB: %v", err)
 	}
