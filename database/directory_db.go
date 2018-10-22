@@ -41,7 +41,6 @@ func RemoveOpDir(s Session, opname string) error {
 
 	collection := s.GetCollection(dirDB, dirCollection)
 
-	// var data []bson.M
 	var ops []OpDir
 	err := collection.Find(bson.M{}).All(&ops)
 	if err != nil {
@@ -71,7 +70,6 @@ func GetOpDirs(s Session) ([]string, error) {
 	)
 	defer session.Close()
 
-	// err := collection.Find(bson.M{}).All(&data)
 	err := collection.Find(bson.M{}).Select(bson.M{"operation.path": 1}).All(&ops)
 	if err != nil {
 		return nil, err
@@ -82,4 +80,27 @@ func GetOpDirs(s Session) ([]string, error) {
 	}
 
 	return opdirs, nil
+}
+
+// GetOpNameFromPath gets the Name property of an OpDir and returns if it exists
+func GetOpNameFromPath(s Session, path string) (string, error) {
+	var (
+		session    = s.Copy()
+		collection = s.GetCollection(dirDB, dirCollection)
+		op         []OpDir
+	)
+	defer session.Close()
+
+	err := collection.Find(bson.M{}).Select(bson.M{"operation": 1}).All(&op)
+	if err != nil {
+		return "", err
+	}
+
+	for _, op := range op {
+		if op.Operation.Path == path {
+			return op.Operation.Name, nil
+		}
+	}
+
+	return "", fmt.Errorf("no operation found with path: %s", path)
 }
