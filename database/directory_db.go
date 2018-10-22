@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+
 	bson "github.com/globalsign/mgo/bson"
 )
 
@@ -9,6 +10,12 @@ import (
 type OpDir struct {
 	ID        bson.ObjectId     `json:"id" bson:"_id,omitempty"`
 	Operation map[string]string `json:"operation" bson:"operation"`
+}
+
+// Op is a map of operation names and their local path
+type Op struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 // AddToDB adds an Operation to the Directory Database
