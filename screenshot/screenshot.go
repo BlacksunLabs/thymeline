@@ -9,26 +9,25 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/BlacksunLabs/thymeline/ui"
+	"github.com/globalsign/mgo/bson"
 )
 
 // Screenshot describes a screenshot event
 type Screenshot struct {
-	Description string `json:"description"`
-	Filename    string `json:"filename"`
-	Hash        string `json:"hash"`
-	LocalPath   string `json:"local_path"`
-}
-
-// Save saves a processed screenshot in the local database event cache
-func (sc Screenshot) Save(dbConn string) error {
-
-	return nil
+	ID          bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Timestamp   time.Time     `json:"timestamp"`
+	OpName      string        `json:"op_name"`
+	Description string        `json:"description"`
+	Filename    string        `json:"filename"`
+	Hash        string        `json:"hash"`
+	LocalPath   string        `json:"local_path"`
 }
 
 // GetDescription gets a description string from user input via UI textbox
-func (sc *Screenshot) GetDescription() (description string, ok bool, err error) {
+func (sc *Screenshot) GetDescription() (ok bool, err error) {
 	retries := 3
 
 	for i := 0; i < retries; i++ {
@@ -37,15 +36,15 @@ func (sc *Screenshot) GetDescription() (description string, ok bool, err error) 
 			fmt.Printf("%v", err)
 		} else if !ok {
 			// fmt.Println("User clicked cancel")
-			return "", false, nil
+			return false, nil
 		} else if len(description) < 1 {
 			// fmt.Println("Empty input")
 		} else {
 			sc.Description = description
-			return description, true, nil
+			return true, nil
 		}
 	}
-	return "", false, fmt.Errorf("giving up after %d retries", retries)
+	return false, fmt.Errorf("giving up after %d retries", retries)
 }
 
 // HashFile hashes a file with md5 and adds the hash to a Screenshot
@@ -68,10 +67,10 @@ func (sc *Screenshot) HashFile() error {
 }
 
 // Rename renames a screenshot to a given description
-func (sc *Screenshot) Rename(oldName string, description string) {
-	dir := filepath.Dir(oldName)
+func (sc *Screenshot) Rename(oldName string) {
+	dir := filepath.Dir(oldName) + "/"
 
-	os.Rename(oldName, dir+description+".png")
-	sc.Filename = description + ".png"
+	os.Rename(oldName, dir+sc.Description+".png")
+	sc.Filename = sc.Description + ".png"
 	sc.LocalPath = dir + sc.Filename
 }
