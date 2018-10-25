@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/BlacksunLabs/thymeline/database"
 	"github.com/BlacksunLabs/thymeline/screenshot"
@@ -23,7 +24,7 @@ func init() {
 func createop() {
 	dir, err := ui.ChooseDirectory()
 	if err != nil {
-		fmt.Printf("Unable to create directory `%s` : %v", dir, err)
+		fmt.Printf("cannot access directory %s : %v", dir, err)
 		return
 	}
 
@@ -33,26 +34,34 @@ func createop() {
 		return
 	} else if !ok {
 		fmt.Println("user clicked cancel.. Skipping adding operation directory to monitor")
-	} else { // No error, user didn't cancel. Try adding the op
-		s, err := db.Connect()
-		if err != nil {
-			fmt.Printf("unable to connect to database: %v", err)
-			return
-		}
-		defer s.Close()
-
-		opdir := db.OpDir{
-			Operation: db.Op{
-				Name: opName,
-				Path: dir,
-			},
-		}
-		err = opdir.AddToDB(*s)
-		if err != nil {
-			fmt.Printf("unable to add operation to database: %v", err)
-		}
 		return
 	}
+	s, err := db.Connect()
+	if err != nil {
+		fmt.Printf("unable to connect to database: %v", err)
+		return
+	}
+	defer s.Close()
+
+	opdir := db.OpDir{
+		Operation: db.Op{
+			Name: opName,
+			Path: dir,
+		},
+	}
+
+	err = opdir.AddToDB(*s)
+	if err != nil {
+		fmt.Printf("unable to add operation to database: %v", err)
+	}
+
+	// [BUG]: Not sure why but the Directory Chooser dialog box remains open
+	// after following a successful code path and causes the entire program to
+	// deadlock.
+	//
+	// Using os.Exit(0) as a hacky alternative to a typical return in order to
+	// mitigate this issue until a solution can be found.
+	os.Exit(0)
 }
 
 func main() {
