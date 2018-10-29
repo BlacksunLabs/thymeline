@@ -1,4 +1,4 @@
-![logo](https://user-images.githubusercontent.com/29786827/47677441-54cdc800-db7c-11e8-97af-c27335962d5e.png)
+<div style="text-align:center"><img src ="https://user-images.githubusercontent.com/29786827/47677441-54cdc800-db7c-11e8-97af-c27335962d5e.png" /></div>
 
 # Thymeline
 
