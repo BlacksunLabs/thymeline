@@ -56,7 +56,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Blacksun Research Labs** - *Initial work* - [PurpleBooth](https://github.com/BlacksunLabs)
+* **Blacksun Research Labs** - *Initial work* - [BlacksunLabs](https://github.com/BlacksunLabs)
 
 See also the list of [contributors](https://github.com/BlacksunLabs/thymeline/contributors) who participated in this project.
 
